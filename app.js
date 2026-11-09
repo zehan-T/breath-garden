@@ -66,17 +66,23 @@ function normalizeFlowerPlan(bloom) {
 }
 
 function getFlowerLayout(count) {
-  if (count === 1) return [{ center: 210, scale: 0.92, y: 28 }];
+  const alignToGround = (center, scale) => ({
+    center,
+    scale,
+    y: 365 * (1 - scale),
+  });
+
+  if (count === 1) return [alignToGround(210, 0.92)];
   if (count === 2) {
     return [
-      { center: 130, scale: 0.74, y: 94 },
-      { center: 290, scale: 0.86, y: 50 },
+      alignToGround(130, 0.74),
+      alignToGround(290, 0.86),
     ];
   }
   return [
-    { center: 92, scale: 0.59, y: 148 },
-    { center: 210, scale: 0.84, y: 58 },
-    { center: 328, scale: 0.59, y: 148 },
+    alignToGround(92, 0.59),
+    alignToGround(210, 0.84),
+    alignToGround(328, 0.59),
   ];
 }
 

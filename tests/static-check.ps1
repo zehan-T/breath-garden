@@ -37,6 +37,9 @@ if ($script -notmatch 'duration\s*>=\s*60\)\s*return\s*3' -or $script -notmatch 
 if ($script -notmatch 'flowers:\s*state\.sessionPlan') {
   $failures.Add('Completed sessions do not appear to save their flower plan.')
 }
+if ($script -notmatch 'y:\s*365\s*\*\s*\(1\s*-\s*scale\)') {
+  $failures.Add('Multi-flower layouts do not share the approved ground baseline.')
+}
 
 if ($failures.Count -gt 0) {
   Write-Host 'Static checks failed:' -ForegroundColor Red
@@ -52,3 +55,4 @@ Write-Host '- no external scripts'
 Write-Host '- no raw audio recording/storage markers'
 Write-Host '- three flower types and duration mapping present'
 Write-Host '- completed sessions save their flower plan'
+Write-Host '- multi-flower layouts share one ground baseline'

@@ -77,6 +77,7 @@ When you begin this step, start a fresh chat so its transcript stays clean. For 
 - Observation: Star Petal's circular center appeared too low within its petal arrangement; the issue was internal alignment, not the position of the whole plant.
 - First revisions incorrectly moved the flower head and then the entire plant. These position changes were removed after Developer review.
 - Final revision: keep the plant and petals in their original bouquet position and move only the circular flower center upward to align it visually with the petals.
+- Bouquet alignment revision: calculate every plant's vertical position from one shared ground baseline, so differently scaled flowers have exactly aligned bottom shadows in practice, result, and Garden views.
 - Verification still needed: result and Garden reproduce the practice bouquet, and a saved bouquet remains unchanged after refresh.
 
 ## Simplification reviews
