@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f8f7ff" />
+    <meta
+      name="description"
+      content="Breath Garden turns breath sounds and humming into a growing digital flower."
+    />
+    <title>Breath Garden</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <main class="app-shell">
+      <section id="home-screen" class="screen screen--active" aria-labelledby="home-title">
+        <header class="brand-lockup">
+          <div class="brand-mark" aria-hidden="true">
+            <span class="brand-mark__breeze"></span>
+            <span class="brand-mark__stem"></span>
+            <span class="brand-mark__petal brand-mark__petal--one"></span>
+            <span class="brand-mark__petal brand-mark__petal--two"></span>
+          </div>
+          <p class="eyebrow">A mindful voice ritual</p>
+          <h1 id="home-title">Breath Garden</h1>
+          <p class="brand-cn" lang="zh-Hans">呼吸花园</p>
+          <p class="lede">Let your breath become something beautiful.</p>
+        </header>
+
+        <section class="selection-panel" aria-labelledby="mode-heading">
+          <div class="section-heading">
+            <div>
+              <p class="step-label">Step 1</p>
+              <h2 id="mode-heading">Choose a ritual</h2>
+            </div>
+            <span class="local-badge">Private on device</span>
+          </div>
+
+          <div class="mode-grid" role="radiogroup" aria-label="Practice mode">
+            <button class="mode-card is-selected" type="button" data-mode="breath" role="radio" aria-checked="true">
+              <span class="mode-card__icon mode-card__icon--breath" aria-hidden="true">≈</span>
+              <span class="mode-card__copy">
+                <strong>Breathe</strong>
+                <small>Blow softly toward the microphone</small>
+              </span>
+              <span class="mode-card__check" aria-hidden="true">✓</span>
+            </button>
+
+            <button class="mode-card" type="button" data-mode="hum" role="radio" aria-checked="false">
+              <span class="mode-card__icon mode-card__icon--hum" aria-hidden="true">♪</span>
+              <span class="mode-card__copy">
+                <strong>Hum</strong>
+                <small>Hold a comfortable humming sound</small>
+              </span>
+              <span class="mode-card__check" aria-hidden="true">✓</span>
+            </button>
+
+            <button class="mode-card mode-card--locked" type="button" disabled>
+              <span class="mode-card__icon" aria-hidden="true">✦</span>
+              <span class="mode-card__copy">
+                <strong>Sing</strong>
+                <small>Coming in a future bloom</small>
+              </span>
+              <span class="mode-card__soon">Soon</span>
+            </button>
+          </div>
+        </section>
+
+        <section class="duration-panel" aria-labelledby="duration-heading">
+          <p class="step-label">Step 2</p>
+          <h2 id="duration-heading">Choose a duration</h2>
+          <div class="duration-picker" role="radiogroup" aria-label="Practice duration">
+            <button type="button" data-duration="15" role="radio" aria-checked="true" class="is-selected">15 sec</button>
+            <button type="button" data-duration="30" role="radio" aria-checked="false">30 sec</button>
+            <button type="button" data-duration="60" role="radio" aria-checked="false">1 min</button>
+          </div>
+        </section>
+
+        <div class="privacy-note">
+          <span aria-hidden="true">◌</span>
+          <p><strong>No recording.</strong> Sound is analyzed live in this browser and never uploaded.</p>
+        </div>
+
+        <button id="begin-button" class="primary-button" type="button">
+          Begin Breathe
+          <span aria-hidden="true">→</span>
+        </button>
+
+        <p class="fine-print">
+          This creative practice tool detects microphone sound, not actual airflow. It is not medical,
+          vocal-diagnostic, or diving guidance.
+        </p>
+
+        <button id="open-garden-button" class="text-button" type="button">
+          View my garden <span id="garden-count" class="count-pill">0</span>
+        </button>
+      </section>
+
+      <section id="practice-screen" class="screen" aria-labelledby="practice-title" hidden>
+        <header class="practice-header">
+          <button id="exit-button" class="icon-button" type="button" aria-label="Exit practice">×</button>
+          <div>
+            <p id="practice-mode-label" class="eyebrow">Breathe ritual</p>
+            <h1 id="practice-title">Wake the seed</h1>
+          </div>
+          <span id="timer" class="timer" aria-live="off">0:15</span>
+        </header>
+
+        <div class="progress-track" aria-hidden="true">
+          <span id="progress-bar"></span>
+        </div>
+
+        <div class="flower-stage" aria-label="A flower that grows with your sound">
+          <div id="ambient-orb" class="ambient-orb" aria-hidden="true"></div>
+          <svg id="live-flower" class="live-flower" viewBox="0 0 320 390" role="img" aria-labelledby="flower-title">
+            <title id="flower-title">Your growing flower</title>
+            <defs>
+              <linearGradient id="stem-gradient" x1="0" y1="1" x2="1" y2="0">
+                <stop offset="0" stop-color="#9dbce9" />
+                <stop offset="1" stop-color="#a38ae8" />
+              </linearGradient>
+              <linearGradient id="petal-gradient" x1="0" y1="1" x2="1" y2="0">
+                <stop offset="0" stop-color="#b9d9ff" />
+                <stop offset="0.56" stop-color="#c9b8ff" />
+                <stop offset="1" stop-color="#ece6ff" />
+              </linearGradient>
+              <filter id="flower-glow" x="-60%" y="-60%" width="220%" height="220%">
+                <feGaussianBlur stdDeviation="10" result="blur" />
+                <feFlood flood-color="#b49cf1" flood-opacity="0.42" />
+                <feComposite in2="blur" operator="in" />
+                <feMerge>
+                  <feMergeNode />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+            <g class="flower-art" filter="url(#flower-glow)">
+              <path id="stem-path" class="stem-path" pathLength="1" d="M160 360 C151 294 178 240 162 185 C151 146 164 112 168 93" />
+              <path id="leaf-left" class="leaf leaf--left" d="M158 269 C115 245 92 255 73 286 C111 295 139 286 158 269Z" />
+              <path id="leaf-right" class="leaf leaf--right" d="M165 229 C195 195 225 193 247 210 C226 239 194 248 165 229Z" />
+              <g id="bloom" class="bloom">
+                <path class="petal petal--left" d="M168 112 C121 107 96 77 104 38 C144 45 169 73 168 112Z" />
+                <path class="petal petal--center" d="M168 112 C143 76 151 38 181 12 C207 51 198 87 168 112Z" />
+                <path class="petal petal--right" d="M168 112 C190 76 222 61 253 78 C233 112 203 125 168 112Z" />
+                <circle class="flower-heart" cx="168" cy="112" r="11" />
+              </g>
+            </g>
+            <ellipse class="ground-shadow" cx="160" cy="365" rx="62" ry="10" />
+          </svg>
+        </div>
+
+        <div class="practice-guidance">
+          <p id="calibration-label" class="calibration-label">Preparing microphone…</p>
+          <h2 id="live-instruction">Stay quiet for a moment</h2>
+          <p id="live-detail">We will learn the sound level around you.</p>
+
+          <div class="sound-meter" aria-label="Live sound strength">
+            <span id="sound-meter-fill"></span>
+          </div>
+          <div class="meter-labels" aria-hidden="true">
+            <span>Soft</span><span>Strong</span>
+          </div>
+        </div>
+
+        <button id="stop-button" class="secondary-button" type="button">Finish early</button>
+      </section>
+
+      <section id="result-screen" class="screen result-screen" aria-labelledby="result-title" hidden>
+        <p class="eyebrow">A new bloom</p>
+        <h1 id="result-title">Your practice became a flower.</h1>
+        <div id="result-flower" class="result-flower" aria-hidden="true">✦</div>
+        <p id="result-summary" class="result-summary"></p>
+        <div class="result-stats">
+          <div><strong id="result-duration">0s</strong><span>session</span></div>
+          <div><strong id="result-active">0s</strong><span>active sound</span></div>
+          <div><strong id="result-strength">0%</strong><span>average strength</span></div>
+        </div>
+        <button id="practice-again-button" class="primary-button" type="button">Practice again</button>
+        <button id="result-garden-button" class="text-button" type="button">See my garden</button>
+      </section>
+
+      <section id="garden-screen" class="screen" aria-labelledby="garden-title" hidden>
+        <header class="garden-header">
+          <button id="garden-back-button" class="icon-button" type="button" aria-label="Back to home">←</button>
+          <div>
+            <p class="eyebrow">Your collection</p>
+            <h1 id="garden-title">My Garden</h1>
+          </div>
+        </header>
+        <p class="garden-intro">Every bloom remembers a moment you showed up.</p>
+        <div id="garden-grid" class="garden-grid"></div>
+        <div id="empty-garden" class="empty-garden">
+          <span aria-hidden="true">○</span>
+          <h2>Your first seed is waiting.</h2>
+          <p>Complete a Breathe or Hum ritual to grow a flower.</p>
+        </div>
+        <button id="garden-practice-button" class="primary-button" type="button">Grow another flower</button>
+      </section>
+
+      <div id="error-dialog" class="dialog-backdrop" hidden>
+        <section class="dialog" role="alertdialog" aria-modal="true" aria-labelledby="error-title">
+          <span class="dialog__icon" aria-hidden="true">◌</span>
+          <h2 id="error-title">Microphone unavailable</h2>
+          <p id="error-message">Allow microphone access in your browser settings and try again.</p>
+          <button id="error-close-button" class="primary-button" type="button">Back to choices</button>
+        </section>
+      </div>
+    </main>
+  </body>
+</html>
