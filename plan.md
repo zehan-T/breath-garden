@@ -58,6 +58,12 @@ When you begin this step, start a fresh chat so its transcript stays clean. For 
 - Revision: valid input now contributes a baseline growth rate, strength adds acceleration, and the stem, leaves, and petals appear earlier in the growth curve. The intended result is 75–85% growth from continuous gentle input during a 15-second session, with stronger steady input approaching a full bloom.
 - Next test: compare gentle versus moderately strong input without encouraging force, and confirm that petals become visible early enough to feel responsive.
 
+### November 9 — flower and Garden review
+
+- Observation: the original three pointed petals looked unnatural, and Garden cards used generic circles instead of showing each session's actual growth.
+- Developer decision: Garden should show only each flower's final growth stage, not replay its animation.
+- Revision: practice now uses a symmetrical five-petal bloom. The same geometry is reused in the result and Garden, where saved growth reconstructs the final stem, leaves, bud, or open flower and displays a growth percentage.
+
 ## Simplification reviews
 
 A project this size invites Agents to pile on code. Redirect them away from bloat, stacked patches, obsolete features, and edge cases that a simpler design or code-structure rule would prevent. At the end of Phases 3, 4, and 5, have the Agent identify these problems, then decide yourself what to change. Record what it found, what you decided and why, and the result. Update the architecture in `spec.md` if the structure changes.

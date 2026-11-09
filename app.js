@@ -2,8 +2,81 @@
 
 const STORAGE_KEY = "breathGardenBloomsV1";
 const CALIBRATION_MS = 1600;
+const SVG_NS = "http://www.w3.org/2000/svg";
 
 const clamp = (value, min = 0, max = 1) => Math.min(max, Math.max(min, value));
+
+function createSvgNode(name, attributes = {}) {
+  const node = document.createElementNS(SVG_NS, name);
+  Object.entries(attributes).forEach(([key, value]) => node.setAttribute(key, String(value)));
+  return node;
+}
+
+function getGrowthStages(growth) {
+  return {
+    stem: clamp(growth / 0.42),
+    leftLeaf: clamp((growth - 0.12) / 0.24),
+    rightLeaf: clamp((growth - 0.25) / 0.24),
+    bloom: clamp((growth - 0.38) / 0.62),
+  };
+}
+
+function createFlowerPreview(bloom, className) {
+  const growth = clamp((Number(bloom.growth) || 0) / 100);
+  const stages = getGrowthStages(growth);
+  const svg = createSvgNode("svg", {
+    viewBox: "35 0 270 390",
+    class: className,
+    role: "img",
+    "aria-label": `Flower at ${Math.round(growth * 100)} percent growth`,
+  });
+  svg.style.setProperty("--preview-stem", stages.stem.toFixed(3));
+  svg.style.setProperty("--preview-left", stages.leftLeaf.toFixed(3));
+  svg.style.setProperty("--preview-left-scale", (0.35 + stages.leftLeaf * 0.65).toFixed(3));
+  svg.style.setProperty("--preview-right", stages.rightLeaf.toFixed(3));
+  svg.style.setProperty("--preview-right-scale", (0.35 + stages.rightLeaf * 0.65).toFixed(3));
+  svg.style.setProperty("--preview-bloom", stages.bloom.toFixed(3));
+  svg.style.filter = `hue-rotate(${((Number(bloom.turn) || 0) % 25) - 12}deg) drop-shadow(0 10px 14px rgba(105, 82, 164, 0.14))`;
+
+  const ground = createSvgNode("ellipse", {
+    class: "garden-flower__ground",
+    cx: 160,
+    cy: 365,
+    rx: 62,
+    ry: 10,
+  });
+  const stem = createSvgNode("path", {
+    class: "garden-flower__stem",
+    pathLength: 1,
+    d: "M160 360 C151 294 178 240 162 185 C151 146 164 124 168 108",
+  });
+  const leftLeaf = createSvgNode("path", {
+    class: "garden-flower__leaf garden-flower__leaf--left",
+    d: "M158 269 C115 245 92 255 73 286 C111 295 139 286 158 269Z",
+  });
+  const rightLeaf = createSvgNode("path", {
+    class: "garden-flower__leaf garden-flower__leaf--right",
+    d: "M165 229 C195 195 225 193 247 210 C226 239 194 248 165 229Z",
+  });
+  const flower = createSvgNode("g", { class: "garden-flower__bloom" });
+  const petalSpecs = [
+    { cx: 125, cy: 91, rx: 24, ry: 51, transform: "rotate(-56 125 91)", class: "garden-flower__petal garden-flower__petal--outer" },
+    { cx: 146, cy: 72, rx: 26, ry: 54, transform: "rotate(-27 146 72)", class: "garden-flower__petal" },
+    { cx: 168, cy: 61, rx: 28, ry: 58, class: "garden-flower__petal garden-flower__petal--center" },
+    { cx: 190, cy: 72, rx: 26, ry: 54, transform: "rotate(27 190 72)", class: "garden-flower__petal" },
+    { cx: 211, cy: 91, rx: 24, ry: 51, transform: "rotate(56 211 91)", class: "garden-flower__petal garden-flower__petal--outer" },
+  ];
+  petalSpecs.forEach((attributes) => flower.append(createSvgNode("ellipse", attributes)));
+  flower.append(createSvgNode("circle", {
+    class: "garden-flower__heart",
+    cx: 168,
+    cy: 112,
+    r: 14,
+  }));
+
+  svg.append(ground, stem, leftLeaf, rightLeaf, flower);
+  return svg;
+}
 
 const elements = {
   screens: [...document.querySelectorAll(".screen")],
@@ -357,19 +430,16 @@ function runSession(now) {
 }
 
 function updateFlower(growth, strength) {
-  const stemProgress = clamp(growth / 0.42);
-  const leftLeafProgress = clamp((growth - 0.12) / 0.24);
-  const rightLeafProgress = clamp((growth - 0.25) / 0.24);
-  const bloomProgress = clamp((growth - 0.38) / 0.62);
+  const stages = getGrowthStages(growth);
 
-  elements.liveFlower.style.setProperty("--stem-progress", stemProgress.toFixed(3));
-  elements.liveFlower.style.setProperty("--bloom-progress", bloomProgress.toFixed(3));
+  elements.liveFlower.style.setProperty("--stem-progress", stages.stem.toFixed(3));
+  elements.liveFlower.style.setProperty("--bloom-progress", stages.bloom.toFixed(3));
   elements.liveFlower.style.setProperty("--sound", strength.toFixed(3));
   elements.ambientOrb.style.setProperty("--sound", strength.toFixed(3));
-  elements.leafLeft.style.setProperty("--part-opacity", leftLeafProgress.toFixed(3));
-  elements.leafLeft.style.setProperty("--part-scale", (0.35 + leftLeafProgress * 0.65).toFixed(3));
-  elements.leafRight.style.setProperty("--part-opacity", rightLeafProgress.toFixed(3));
-  elements.leafRight.style.setProperty("--part-scale", (0.35 + rightLeafProgress * 0.65).toFixed(3));
+  elements.leafLeft.style.setProperty("--part-opacity", stages.leftLeaf.toFixed(3));
+  elements.leafLeft.style.setProperty("--part-scale", (0.35 + stages.leftLeaf * 0.65).toFixed(3));
+  elements.leafRight.style.setProperty("--part-opacity", stages.rightLeaf.toFixed(3));
+  elements.leafRight.style.setProperty("--part-scale", (0.35 + stages.rightLeaf * 0.65).toFixed(3));
   elements.soundMeterFill.style.width = `${Math.round(strength * 100)}%`;
 }
 
@@ -438,8 +508,9 @@ function showResult(bloom, hasMeaningfulInput) {
   elements.resultActive.textContent = `${bloom.activeSeconds}s`;
   elements.resultStrength.textContent = `${bloom.strength}%`;
   elements.resultFlower.classList.toggle("result-flower--seed", !hasMeaningfulInput);
-  elements.resultFlower.textContent = hasMeaningfulInput ? "✦" : "○";
-  elements.resultFlower.style.transform = `rotate(${bloom.turn % 24 - 12}deg)`;
+  elements.resultFlower.replaceChildren(
+    hasMeaningfulInput ? createFlowerPreview(bloom, "result-flower__svg") : document.createTextNode("○"),
+  );
   showScreen("result-screen");
 }
 
@@ -477,19 +548,23 @@ function renderGarden() {
     const card = document.createElement("article");
     card.className = "garden-card";
 
-    const flower = document.createElement("div");
-    flower.className = "garden-card__bloom";
-    flower.style.setProperty("--turn", `${bloom.turn || index * 31}deg`);
-    flower.textContent = "✦";
+    const visual = document.createElement("div");
+    visual.className = "garden-card__visual";
+    const visualBloom = { ...bloom, turn: bloom.turn || index * 31 };
+    visual.append(createFlowerPreview(visualBloom, "garden-flower-svg"));
 
     const title = document.createElement("strong");
     title.textContent = bloom.mode === "breath" ? "Breeze Bloom" : "Resonance Bloom";
+
+    const growth = document.createElement("span");
+    growth.className = "garden-card__growth";
+    growth.textContent = `Growth ${Math.round(Number(bloom.growth) || 0)}%`;
 
     const detail = document.createElement("small");
     const date = new Date(bloom.createdAt);
     detail.textContent = `${date.toLocaleDateString(undefined, { month: "short", day: "numeric" })} · ${bloom.duration}s`;
 
-    card.append(flower, title, detail);
+    card.append(visual, title, growth, detail);
     elements.gardenGrid.append(card);
   });
 }

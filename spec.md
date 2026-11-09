@@ -34,6 +34,7 @@ Breath Garden is currently a mobile-first browser prototype. A User chooses Brea
 - A session with less than one second of accepted input does not create or save a flower; the result explains that the seed is still waiting.
 - Finishing a session creates a local flower record containing mode, date, duration, active time, relative strength, growth, and a visual seed.
 - Saved flowers remain after refresh through `localStorage` and appear in My Garden.
+- Practice, result, and Garden use the same recognizable five-petal flower geometry. Each Garden card reconstructs the final saved stem, leaf, and bloom stage from that session's `growth` value and labels it with mode, date, duration, and growth percentage. Garden does not replay the animation.
 - If microphone access is denied, unsupported, or unavailable outside a secure context, the User sees a specific recovery message instead of a broken practice screen.
 - All controls have text labels or accessible names, visible keyboard focus, sufficient touch size, and reduced motion support.
 

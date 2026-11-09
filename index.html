@@ -136,14 +136,16 @@
               </filter>
             </defs>
             <g class="flower-art" filter="url(#flower-glow)">
-              <path id="stem-path" class="stem-path" pathLength="1" d="M160 360 C151 294 178 240 162 185 C151 146 164 112 168 93" />
+              <path id="stem-path" class="stem-path" pathLength="1" d="M160 360 C151 294 178 240 162 185 C151 146 164 124 168 108" />
               <path id="leaf-left" class="leaf leaf--left" d="M158 269 C115 245 92 255 73 286 C111 295 139 286 158 269Z" />
               <path id="leaf-right" class="leaf leaf--right" d="M165 229 C195 195 225 193 247 210 C226 239 194 248 165 229Z" />
               <g id="bloom" class="bloom">
-                <path class="petal petal--left" d="M168 112 C121 107 96 77 104 38 C144 45 169 73 168 112Z" />
-                <path class="petal petal--center" d="M168 112 C143 76 151 38 181 12 C207 51 198 87 168 112Z" />
-                <path class="petal petal--right" d="M168 112 C190 76 222 61 253 78 C233 112 203 125 168 112Z" />
-                <circle class="flower-heart" cx="168" cy="112" r="11" />
+                <ellipse class="petal petal--outer" cx="125" cy="91" rx="24" ry="51" transform="rotate(-56 125 91)" />
+                <ellipse class="petal petal--inner" cx="146" cy="72" rx="26" ry="54" transform="rotate(-27 146 72)" />
+                <ellipse class="petal petal--center" cx="168" cy="61" rx="28" ry="58" />
+                <ellipse class="petal petal--inner" cx="190" cy="72" rx="26" ry="54" transform="rotate(27 190 72)" />
+                <ellipse class="petal petal--outer" cx="211" cy="91" rx="24" ry="51" transform="rotate(56 211 91)" />
+                <circle class="flower-heart" cx="168" cy="112" r="14" />
               </g>
             </g>
             <ellipse class="ground-shadow" cx="160" cy="365" rx="62" ry="10" />
