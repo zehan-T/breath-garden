@@ -100,16 +100,16 @@ function appendBloomShape(group, type) {
       group.append(createSvgNode("ellipse", {
         class: "garden-flower__star-petal",
         cx: 168,
-        cy: 53,
+        cy: 70,
         rx: 13,
         ry: 43,
-        transform: `rotate(${angle} 168 91)`,
+        transform: `rotate(${angle} 168 108)`,
       }));
     }
     group.append(createSvgNode("circle", {
       class: "garden-flower__heart",
       cx: 168,
-      cy: 91,
+      cy: 108,
       r: 17,
     }));
     return;
@@ -158,9 +158,10 @@ function createFlowerCluster(bloom, className) {
   flowerSpecs.forEach((spec, index) => {
     const position = layout[index];
     const offsetX = position.center - 168 * position.scale;
+    const typeOffsetY = spec.type === "star" ? -24 : 0;
     const plant = createSvgNode("g", {
       class: `garden-flower__plant garden-flower__plant--${spec.type}`,
-      transform: `translate(${offsetX} ${position.y}) scale(${position.scale})`,
+      transform: `translate(${offsetX} ${position.y + typeOffsetY}) scale(${position.scale})`,
     });
     const ground = createSvgNode("ellipse", {
       class: "garden-flower__ground",

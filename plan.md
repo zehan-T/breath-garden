@@ -75,7 +75,8 @@ When you begin this step, start a fresh chat so its transcript stays clean. For 
 
 - Verified by the Developer: 15-, 30-, and 60-second sessions show the correct flower quantities, and two- and three-flower arrangements do not feel crowded.
 - Observation: Star Petal's flower head appeared lower than the other flower types.
-- Revision: moved only the Star Petal head upward within its existing plant position, preserving the approved bouquet spacing and shared stem layout.
+- First revision: moved only the Star Petal head upward within its existing plant position. Developer review showed that this did not align the whole flower.
+- Follow-up revision: restored the Star Petal's internal geometry and moved the entire plant upward, including its flower head, stem, leaves, and ground shadow.
 - Verification still needed: result and Garden reproduce the practice bouquet, and a saved bouquet remains unchanged after refresh.
 
 ## Simplification reviews
