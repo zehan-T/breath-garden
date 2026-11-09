@@ -22,6 +22,7 @@ const elements = {
   liveInstruction: document.querySelector("#live-instruction"),
   liveDetail: document.querySelector("#live-detail"),
   soundMeterFill: document.querySelector("#sound-meter-fill"),
+  signalReadout: document.querySelector("#signal-readout"),
   liveFlower: document.querySelector("#live-flower"),
   ambientOrb: document.querySelector("#ambient-orb"),
   leafLeft: document.querySelector("#leaf-left"),
@@ -80,6 +81,14 @@ class AudioProbe {
       throw new Error("unsupported");
     }
 
+    // Mobile Safari may keep an AudioContext suspended when it is created only
+    // after an asynchronous permission prompt. Create and resume it directly
+    // from the Begin button's user gesture before awaiting the microphone.
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) throw new Error("unsupported");
+    this.context = new AudioContext();
+    await this.context.resume();
+
     this.stream = await navigator.mediaDevices.getUserMedia({
       audio: {
         echoCancellation: false,
@@ -90,9 +99,7 @@ class AudioProbe {
       video: false,
     });
 
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    this.context = new AudioContext();
-    await this.context.resume();
+    if (this.context.state !== "running") await this.context.resume();
 
     const source = this.context.createMediaStreamSource(this.stream);
     this.analyser = this.context.createAnalyser();
@@ -116,17 +123,19 @@ class AudioProbe {
     if (!levels.length) return;
     const sorted = [...levels].sort((a, b) => a - b);
     const quietMedian = sorted[Math.floor(sorted.length * 0.5)] || 0;
-    const quietHigh = sorted[Math.floor(sorted.length * 0.9)] || quietMedian;
-    this.noiseFloor = clamp(quietMedian * 1.65 + 0.0035, 0.004, 0.07);
+    const quietHigh = sorted[Math.floor(sorted.length * 0.75)] || quietMedian;
+    this.noiseFloor = clamp(quietMedian * 1.35 + 0.0025, 0.0035, 0.06);
     this.triggerLevel = clamp(
-      Math.max(quietHigh * 1.45 + 0.004, this.noiseFloor + 0.009),
-      0.014,
-      0.12,
+      Math.max(quietHigh * 1.16 + 0.0015, this.noiseFloor + 0.0035),
+      0.008,
+      0.075,
     );
   }
 
   analyze(mode) {
-    if (!this.analyser) return { level: 0, flatness: 0, highRatio: 0, peakiness: 0, strength: 0 };
+    if (!this.analyser) {
+      return { level: 0, flatness: 0, highRatio: 0, peakiness: 0, rawStrength: 0, strength: 0 };
+    }
 
     const rms = this.sampleRawLevel();
     this.analyser.getByteFrequencyData(this.frequencyData);
@@ -157,19 +166,23 @@ class AudioProbe {
     const relativeLevel = clamp((rms - this.triggerLevel) / Math.max(0.03, 0.17 - this.triggerLevel));
 
     // Air noise tends to be flatter and broader; humming tends to have stronger spectral peaks.
-    // Require both enough level above the room and a loose mode-specific character match.
+    // The User already selected the mode, so spectral character is only a light weighting,
+    // not a hard gate that could reject a real phone microphone signal.
     const breathConfidence = clamp((flatness - 0.12) / 0.38) * 0.62
       + clamp((highRatio - 0.2) / 0.45) * 0.38;
     const humConfidence = clamp((peakiness - 0.08) / 0.42) * 0.58
       + clamp((0.82 - flatness) / 0.58) * 0.42;
-    const character = mode === "breath" ? breathConfidence : humConfidence;
+    const character = mode === "breath"
+      ? 0.72 + breathConfidence * 0.28
+      : 0.68 + humConfidence * 0.32;
 
     return {
       level: rms,
       flatness,
       highRatio,
       peakiness,
-      strength: character >= 0.28 ? clamp(relativeLevel * character) : 0,
+      rawStrength: relativeLevel,
+      strength: clamp(relativeLevel * character),
     };
   }
 
@@ -238,6 +251,7 @@ function resetFlower() {
   elements.leafRight.style.setProperty("--part-opacity", "0");
   elements.leafRight.style.setProperty("--part-scale", "0.35");
   elements.soundMeterFill.style.width = "0%";
+  elements.signalReadout.textContent = "Mic signal 0%";
   elements.progressBar.style.width = "0%";
 }
 
@@ -310,17 +324,17 @@ function runSession(now) {
   state.lastFrame = now;
 
   const metrics = audioProbe.analyze(state.mode);
-  if (metrics.strength > 0.055) {
+  if (metrics.strength > 0.04) {
     state.candidateSeconds = Math.min(0.5, state.candidateSeconds + deltaSeconds);
   } else {
     state.candidateSeconds = Math.max(0, state.candidateSeconds - deltaSeconds * 2.5);
   }
-  state.inputActive = state.candidateSeconds >= 0.14;
+  state.inputActive = state.candidateSeconds >= 0.12;
 
   const targetStrength = state.inputActive ? metrics.strength : 0;
   state.smoothedStrength = state.smoothedStrength * 0.72 + targetStrength * 0.28;
 
-  if (state.inputActive && state.smoothedStrength > 0.055) {
+  if (state.inputActive && state.smoothedStrength > 0.04) {
     state.activeSeconds += deltaSeconds;
     state.strengthTotal += state.smoothedStrength;
     state.activeSamples += 1;
@@ -328,6 +342,8 @@ function runSession(now) {
   }
 
   updateFlower(state.growth, state.smoothedStrength);
+  elements.soundMeterFill.style.width = `${Math.round(metrics.rawStrength * 100)}%`;
+  elements.signalReadout.textContent = `Mic signal ${Math.round(metrics.rawStrength * 100)}%`;
   updateInstruction(state.smoothedStrength);
 
   const progress = clamp(elapsedSeconds / state.duration);
@@ -360,7 +376,7 @@ function updateInstruction(strength) {
   if (state.mode === "breath") {
     if (strength < 0.075) {
       elements.liveInstruction.textContent = "Send a soft breeze";
-      elements.liveDetail.textContent = "Hold the phone a little away and blow gently toward its microphone.";
+      elements.liveDetail.textContent = "Hold the phone 3–8 cm away and blow gently toward its microphone.";
     } else if (strength < 0.55) {
       elements.liveInstruction.textContent = "The garden feels you";
       elements.liveDetail.textContent = "Keep the breeze comfortable and steady.";

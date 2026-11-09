@@ -593,6 +593,14 @@ h2 {
   font-size: 0.57rem;
 }
 
+.signal-readout {
+  margin: 7px 0 0 !important;
+  color: #71688a !important;
+  font-size: 0.66rem !important;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+
 .secondary-button {
   display: block;
   margin: 20px auto 0;

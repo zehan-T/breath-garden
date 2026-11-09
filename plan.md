@@ -45,6 +45,13 @@ When you begin this step, start a fresh chat so its transcript stays clean. For 
 - Revision: calibration now includes the 90th-percentile room level and a separate trigger margin; growth also requires loose breath/hum spectral confidence and at least 140 ms of sustained evidence. Silence begins at zero growth, and sessions with less than one accepted second do not save a flower.
 - Verification still needed: quiet room, conversation in the background, phone handling noise, soft/strong blowing, and soft/strong humming on real phones.
 
+### November 9 — first phone test
+
+- Observation: the interface loaded, but blowing produced no visible flower or meter response.
+- Likely causes: the AudioContext was created after the asynchronous permission prompt and may have remained suspended on the phone; the revised spectral confidence gate could also reject genuine breath noise.
+- Revision: AudioContext now starts directly from the Begin tap, the calibration trigger is more sensitive, spectral characteristics only adjust strength instead of rejecting input, and the practice screen reports raw `Mic signal 0–100%` for diagnosis.
+- Next test: confirm whether the signal number changes while blowing and humming, then judge flower response separately.
+
 ## Simplification reviews
 
 A project this size invites Agents to pile on code. Redirect them away from bloat, stacked patches, obsolete features, and edge cases that a simpler design or code-structure rule would prevent. At the end of Phases 3, 4, and 5, have the Agent identify these problems, then decide yourself what to change. Record what it found, what you decided and why, and the result. Update the architecture in `spec.md` if the structure changes.

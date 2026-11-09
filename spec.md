@@ -29,7 +29,7 @@ Breath Garden is currently a mobile-first browser prototype. A User chooses Brea
 - In Breathe, the system estimates breath sound from live level and broad, noise-like frequency energy. Duration and relative strength affect flower growth. It does not measure physical airflow or lung capacity.
 - In Hum, the system estimates humming response from live level and tonal frequency concentration. Duration and relative strength affect flower growth.
 - The flower must react visibly within the same moment as the sound. Stronger input may add light or movement, but stronger is never presented as better.
-- Background sound or silence must not grow the flower. Input must rise above a calibration-derived trigger, match loose mode-specific spectral characteristics, and persist briefly before growth begins.
+- Background sound or silence must not grow the flower. Input must rise above a calibration-derived trigger and persist briefly before growth begins. Mode-specific spectral characteristics adjust sensitivity but are not a hard rejection gate because mobile audio processing varies by device.
 - A session with less than one second of accepted input does not create or save a flower; the result explains that the seed is still waiting.
 - Finishing a session creates a local flower record containing mode, date, duration, active time, relative strength, growth, and a visual seed.
 - Saved flowers remain after refresh through `localStorage` and appear in My Garden.
@@ -86,3 +86,4 @@ Keep the prototype buildless and dependency-free. Page structure belongs in `ind
 - **Mobile-only primary interaction:** On November 9, the Developer narrowed the intended interaction to phone use so that microphone placement and touch behavior can be designed deliberately.
 - **Microphone-based Breathe:** After pitch approval, Breathe changed from a non-microphone guided animation to a Nintendo-like blowing interaction. This creates a stronger core interaction but removes the original no-permission fallback. The interface must honestly call it breath-sound estimation, not airflow measurement.
 - **One analysis engine:** Breathe and Hum share waveform/frequency collection and calibration. Only their weighting differs, preventing duplicated audio pipelines.
+- **Mobile audio startup:** Create and resume `AudioContext` directly from the Begin tap before waiting for microphone permission. This protects the interaction from mobile browsers that otherwise leave an asynchronously created context suspended.
