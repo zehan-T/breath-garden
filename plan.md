@@ -52,6 +52,12 @@ When you begin this step, start a fresh chat so its transcript stays clean. For 
 - Revision: AudioContext now starts directly from the Begin tap, the calibration trigger is more sensitive, spectral characteristics only adjust strength instead of rejecting input, and the practice screen reports raw `Mic signal 0–100%` for diagnosis.
 - Next test: confirm whether the signal number changes while blowing and humming, then judge flower response separately.
 
+### November 9 — second phone test
+
+- Observation: microphone response and flower growth worked, but the flower grew too slowly.
+- Revision: valid input now contributes a baseline growth rate, strength adds acceleration, and the stem, leaves, and petals appear earlier in the growth curve. The intended result is 75–85% growth from continuous gentle input during a 15-second session, with stronger steady input approaching a full bloom.
+- Next test: compare gentle versus moderately strong input without encouraging force, and confirm that petals become visible early enough to feel responsive.
+
 ## Simplification reviews
 
 A project this size invites Agents to pile on code. Redirect them away from bloat, stacked patches, obsolete features, and edge cases that a simpler design or code-structure rule would prevent. At the end of Phases 3, 4, and 5, have the Agent identify these problems, then decide yourself what to change. Record what it found, what you decided and why, and the result. Update the architecture in `spec.md` if the structure changes.

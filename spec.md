@@ -29,6 +29,7 @@ Breath Garden is currently a mobile-first browser prototype. A User chooses Brea
 - In Breathe, the system estimates breath sound from live level and broad, noise-like frequency energy. Duration and relative strength affect flower growth. It does not measure physical airflow or lung capacity.
 - In Hum, the system estimates humming response from live level and tonal frequency concentration. Duration and relative strength affect flower growth.
 - The flower must react visibly within the same moment as the sound. Stronger input may add light or movement, but stronger is never presented as better.
+- Once valid input is active, it supplies a comfortable baseline growth rate and relative strength adds acceleration. A continuous gentle 15-second input should reveal most of the flower; Users should not need to blow or hum forcefully.
 - Background sound or silence must not grow the flower. Input must rise above a calibration-derived trigger and persist briefly before growth begins. Mode-specific spectral characteristics adjust sensitivity but are not a hard rejection gate because mobile audio processing varies by device.
 - A session with less than one second of accepted input does not create or save a flower; the result explains that the seed is still waiting.
 - Finishing a session creates a local flower record containing mode, date, duration, active time, relative strength, growth, and a visual seed.

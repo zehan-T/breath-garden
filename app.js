@@ -338,7 +338,8 @@ function runSession(now) {
     state.activeSeconds += deltaSeconds;
     state.strengthTotal += state.smoothedStrength;
     state.activeSamples += 1;
-    state.growth = clamp(state.growth + state.smoothedStrength * deltaSeconds / (state.duration * 0.43));
+    const activeGrowthRate = 0.48 + state.smoothedStrength * 0.72;
+    state.growth = clamp(state.growth + activeGrowthRate * deltaSeconds / (state.duration * 0.78));
   }
 
   updateFlower(state.growth, state.smoothedStrength);
@@ -356,10 +357,10 @@ function runSession(now) {
 }
 
 function updateFlower(growth, strength) {
-  const stemProgress = clamp(growth / 0.56);
-  const leftLeafProgress = clamp((growth - 0.2) / 0.28);
-  const rightLeafProgress = clamp((growth - 0.37) / 0.25);
-  const bloomProgress = clamp((growth - 0.52) / 0.48);
+  const stemProgress = clamp(growth / 0.42);
+  const leftLeafProgress = clamp((growth - 0.12) / 0.24);
+  const rightLeafProgress = clamp((growth - 0.25) / 0.24);
+  const bloomProgress = clamp((growth - 0.38) / 0.62);
 
   elements.liveFlower.style.setProperty("--stem-progress", stemProgress.toFixed(3));
   elements.liveFlower.style.setProperty("--bloom-progress", bloomProgress.toFixed(3));
