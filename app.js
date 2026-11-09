@@ -100,16 +100,16 @@ function appendBloomShape(group, type) {
       group.append(createSvgNode("ellipse", {
         class: "garden-flower__star-petal",
         cx: 168,
-        cy: 70,
+        cy: 53,
         rx: 13,
         ry: 43,
-        transform: `rotate(${angle} 168 108)`,
+        transform: `rotate(${angle} 168 91)`,
       }));
     }
     group.append(createSvgNode("circle", {
       class: "garden-flower__heart",
       cx: 168,
-      cy: 108,
+      cy: 91,
       r: 17,
     }));
     return;

@@ -71,6 +71,13 @@ When you begin this step, start a fresh chat so its transcript stays clean. For 
 - Persistence rule: the selected types and their timing values are stored with the completed session, so the result and Garden reproduce the same final bouquet after refresh. Previous Garden records fall back to a single compatible flower.
 - Next phone test: complete one session at each duration and confirm the live quantity, result quantity, Garden quantity, random variety between new sessions, and stable appearance after refresh.
 
+### November 9 — multi-flower phone review
+
+- Verified by the Developer: 15-, 30-, and 60-second sessions show the correct flower quantities, and two- and three-flower arrangements do not feel crowded.
+- Observation: Star Petal's flower head appeared lower than the other flower types.
+- Revision: moved only the Star Petal head upward within its existing plant position, preserving the approved bouquet spacing and shared stem layout.
+- Verification still needed: result and Garden reproduce the practice bouquet, and a saved bouquet remains unchanged after refresh.
+
 ## Simplification reviews
 
 A project this size invites Agents to pile on code. Redirect them away from bloat, stacked patches, obsolete features, and edge cases that a simpler design or code-structure rule would prevent. At the end of Phases 3, 4, and 5, have the Agent identify these problems, then decide yourself what to change. Record what it found, what you decided and why, and the result. Update the architecture in `spec.md` if the structure changes.
