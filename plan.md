@@ -74,9 +74,9 @@ When you begin this step, start a fresh chat so its transcript stays clean. For 
 ### November 9 — multi-flower phone review
 
 - Verified by the Developer: 15-, 30-, and 60-second sessions show the correct flower quantities, and two- and three-flower arrangements do not feel crowded.
-- Observation: Star Petal's flower head appeared lower than the other flower types.
-- First revision: moved only the Star Petal head upward within its existing plant position. Developer review showed that this did not align the whole flower.
-- Follow-up revision: restored the Star Petal's internal geometry and moved the entire plant upward, including its flower head, stem, leaves, and ground shadow.
+- Observation: Star Petal's circular center appeared too low within its petal arrangement; the issue was internal alignment, not the position of the whole plant.
+- First revisions incorrectly moved the flower head and then the entire plant. These position changes were removed after Developer review.
+- Final revision: keep the plant and petals in their original bouquet position and move only the circular flower center upward to align it visually with the petals.
 - Verification still needed: result and Garden reproduce the practice bouquet, and a saved bouquet remains unchanged after refresh.
 
 ## Simplification reviews
