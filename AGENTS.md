@@ -48,8 +48,8 @@ Breath Garden is a buildless mobile-first static site.
 
 - Run locally from the repository root with `powershell -ExecutionPolicy Bypass -File scripts/serve.ps1`, then open `http://127.0.0.1:8000`.
 - Run static checks with `powershell -ExecutionPolicy Bypass -File tests/static-check.ps1`.
-- `index.html` contains the four app screens and inline SVG flower.
-- `styles.css` contains the mobile layout, branding, and flower growth presentation.
-- `app.js` owns microphone analysis, current session state, UI updates, and `localStorage` persistence.
+- `index.html` contains the four app screens and the live flower container.
+- `styles.css` contains the mobile layout, branding, and shared flower-growth presentation.
+- `app.js` owns microphone analysis, randomized SVG flower construction, current session state, UI updates, and `localStorage` persistence.
 - Microphone tests require localhost or HTTPS and explicit User permission. A desktop simulation cannot replace testing on physical phones.
 - No raw microphone audio is recorded, stored, uploaded, or sent to an output node.

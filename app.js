@@ -21,44 +21,100 @@ function getGrowthStages(growth) {
   };
 }
 
-function createFlowerPreview(bloom, className) {
-  const growth = clamp((Number(bloom.growth) || 0) / 100);
-  const stages = getGrowthStages(growth);
-  const svg = createSvgNode("svg", {
-    viewBox: "35 0 270 390",
-    class: className,
-    role: "img",
-    "aria-label": `Flower at ${Math.round(growth * 100)} percent growth`,
-  });
-  svg.style.setProperty("--preview-stem", stages.stem.toFixed(3));
-  svg.style.setProperty("--preview-left", stages.leftLeaf.toFixed(3));
-  svg.style.setProperty("--preview-left-scale", (0.35 + stages.leftLeaf * 0.65).toFixed(3));
-  svg.style.setProperty("--preview-right", stages.rightLeaf.toFixed(3));
-  svg.style.setProperty("--preview-right-scale", (0.35 + stages.rightLeaf * 0.65).toFixed(3));
-  svg.style.setProperty("--preview-bloom", stages.bloom.toFixed(3));
-  svg.style.filter = `hue-rotate(${((Number(bloom.turn) || 0) % 25) - 12}deg) drop-shadow(0 10px 14px rgba(105, 82, 164, 0.14))`;
+const FLOWER_TYPES = ["cloud", "moon", "star"];
 
-  const ground = createSvgNode("ellipse", {
-    class: "garden-flower__ground",
-    cx: 160,
-    cy: 365,
-    rx: 62,
-    ry: 10,
-  });
-  const stem = createSvgNode("path", {
-    class: "garden-flower__stem",
-    pathLength: 1,
-    d: "M160 360 C151 294 178 240 162 185 C151 146 164 124 168 108",
-  });
-  const leftLeaf = createSvgNode("path", {
-    class: "garden-flower__leaf garden-flower__leaf--left",
-    d: "M158 269 C115 245 92 255 73 286 C111 295 139 286 158 269Z",
-  });
-  const rightLeaf = createSvgNode("path", {
-    class: "garden-flower__leaf garden-flower__leaf--right",
-    d: "M165 229 C195 195 225 193 247 210 C226 239 194 248 165 229Z",
-  });
-  const flower = createSvgNode("g", { class: "garden-flower__bloom" });
+function seededRandom(seed) {
+  let value = seed >>> 0;
+  return () => {
+    value += 0x6D2B79F5;
+    let next = value;
+    next = Math.imul(next ^ (next >>> 15), next | 1);
+    next ^= next + Math.imul(next ^ (next >>> 7), next | 61);
+    return ((next ^ (next >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function getFlowerCount(duration) {
+  if (duration >= 60) return 3;
+  if (duration >= 30) return 2;
+  return 1;
+}
+
+function createFlowerPlan(duration) {
+  const seed = Math.floor(Math.random() * 0xFFFFFFFF);
+  const random = seededRandom(seed);
+  const types = [...FLOWER_TYPES];
+  for (let index = types.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(random() * (index + 1));
+    [types[index], types[swapIndex]] = [types[swapIndex], types[index]];
+  }
+  const count = getFlowerCount(duration);
+  return {
+    seed,
+    flowers: types.slice(0, count).map((type, index) => ({
+      type,
+      pace: Number((0.94 + random() * 0.12).toFixed(3)),
+      delay: Number((index === 0 ? 0 : random() * 0.035).toFixed(3)),
+    })),
+  };
+}
+
+function normalizeFlowerPlan(bloom) {
+  if (Array.isArray(bloom.flowers) && bloom.flowers.length) return bloom.flowers.slice(0, 3);
+  const fallbackIndex = Math.abs(Number(bloom.turn) || 0) % FLOWER_TYPES.length;
+  return [{ type: FLOWER_TYPES[fallbackIndex], pace: 1, delay: 0 }];
+}
+
+function getFlowerLayout(count) {
+  if (count === 1) return [{ center: 210, scale: 0.92, y: 28 }];
+  if (count === 2) {
+    return [
+      { center: 130, scale: 0.74, y: 94 },
+      { center: 290, scale: 0.86, y: 50 },
+    ];
+  }
+  return [
+    { center: 92, scale: 0.59, y: 148 },
+    { center: 210, scale: 0.84, y: 58 },
+    { center: 328, scale: 0.59, y: 148 },
+  ];
+}
+
+function appendBloomShape(group, type) {
+  if (type === "moon") {
+    group.append(
+      createSvgNode("path", {
+        class: "garden-flower__moon-cup",
+        d: "M109 95 C119 68 135 47 151 34 C156 54 162 64 168 72 C177 58 187 47 197 35 C203 57 218 74 227 96 C214 120 194 133 168 133 C142 133 122 120 109 95Z",
+      }),
+      createSvgNode("path", {
+        class: "garden-flower__moon-line",
+        d: "M151 35 C149 76 157 104 168 130 M197 36 C190 76 181 105 168 130",
+      }),
+    );
+    return;
+  }
+
+  if (type === "star") {
+    for (let angle = 0; angle < 360; angle += 45) {
+      group.append(createSvgNode("ellipse", {
+        class: "garden-flower__star-petal",
+        cx: 168,
+        cy: 70,
+        rx: 13,
+        ry: 43,
+        transform: `rotate(${angle} 168 108)`,
+      }));
+    }
+    group.append(createSvgNode("circle", {
+      class: "garden-flower__heart",
+      cx: 168,
+      cy: 108,
+      r: 17,
+    }));
+    return;
+  }
+
   const petalSpecs = [
     { cx: 125, cy: 91, rx: 24, ry: 51, transform: "rotate(-56 125 91)", class: "garden-flower__petal garden-flower__petal--outer" },
     { cx: 146, cy: 72, rx: 26, ry: 54, transform: "rotate(-27 146 72)", class: "garden-flower__petal" },
@@ -66,16 +122,83 @@ function createFlowerPreview(bloom, className) {
     { cx: 190, cy: 72, rx: 26, ry: 54, transform: "rotate(27 190 72)", class: "garden-flower__petal" },
     { cx: 211, cy: 91, rx: 24, ry: 51, transform: "rotate(56 211 91)", class: "garden-flower__petal garden-flower__petal--outer" },
   ];
-  petalSpecs.forEach((attributes) => flower.append(createSvgNode("ellipse", attributes)));
-  flower.append(createSvgNode("circle", {
+  petalSpecs.forEach((attributes) => group.append(createSvgNode("ellipse", attributes)));
+  group.append(createSvgNode("circle", {
     class: "garden-flower__heart",
     cx: 168,
     cy: 112,
     r: 14,
   }));
+}
 
-  svg.append(ground, stem, leftLeaf, rightLeaf, flower);
-  return svg;
+function applyFlowerGrowth(entry, overallGrowth, sound = 0) {
+  const flowerGrowth = clamp(overallGrowth * (Number(entry.spec.pace) || 1) - (Number(entry.spec.delay) || 0));
+  const stages = getGrowthStages(flowerGrowth);
+  entry.group.style.setProperty("--preview-stem", stages.stem.toFixed(3));
+  entry.group.style.setProperty("--preview-left", stages.leftLeaf.toFixed(3));
+  entry.group.style.setProperty("--preview-left-scale", (0.35 + stages.leftLeaf * 0.65).toFixed(3));
+  entry.group.style.setProperty("--preview-right", stages.rightLeaf.toFixed(3));
+  entry.group.style.setProperty("--preview-right-scale", (0.35 + stages.rightLeaf * 0.65).toFixed(3));
+  entry.group.style.setProperty("--preview-bloom", stages.bloom.toFixed(3));
+  entry.group.style.setProperty("--preview-sound", sound.toFixed(3));
+}
+
+function createFlowerCluster(bloom, className) {
+  const growth = clamp((Number(bloom.growth) || 0) / 100);
+  const flowerSpecs = normalizeFlowerPlan(bloom);
+  const layout = getFlowerLayout(flowerSpecs.length);
+  const svg = createSvgNode("svg", {
+    viewBox: "0 0 420 390",
+    class: className,
+    role: "img",
+    "aria-label": `${flowerSpecs.length} ${flowerSpecs.length === 1 ? "flower" : "flowers"} at ${Math.round(growth * 100)} percent growth`,
+  });
+  const entries = [];
+
+  flowerSpecs.forEach((spec, index) => {
+    const position = layout[index];
+    const offsetX = position.center - 168 * position.scale;
+    const plant = createSvgNode("g", {
+      class: `garden-flower__plant garden-flower__plant--${spec.type}`,
+      transform: `translate(${offsetX} ${position.y}) scale(${position.scale})`,
+    });
+    const ground = createSvgNode("ellipse", {
+      class: "garden-flower__ground",
+      cx: 160,
+      cy: 365,
+      rx: 62,
+      ry: 10,
+    });
+    const stem = createSvgNode("path", {
+      class: "garden-flower__stem",
+      pathLength: 1,
+      d: "M160 360 C151 294 178 240 162 185 C151 146 164 124 168 108",
+    });
+    const leftLeaf = createSvgNode("path", {
+      class: "garden-flower__leaf garden-flower__leaf--left",
+      d: "M158 269 C115 245 92 255 73 286 C111 295 139 286 158 269Z",
+    });
+    const rightLeaf = createSvgNode("path", {
+      class: "garden-flower__leaf garden-flower__leaf--right",
+      d: "M165 229 C195 195 225 193 247 210 C226 239 194 248 165 229Z",
+    });
+    const flower = createSvgNode("g", {
+      class: `garden-flower__bloom garden-flower__bloom--${spec.type}`,
+    });
+    appendBloomShape(flower, spec.type);
+    plant.append(ground, stem, leftLeaf, rightLeaf, flower);
+    svg.append(plant);
+    const entry = { group: plant, spec };
+    applyFlowerGrowth(entry, growth);
+    entries.push(entry);
+  });
+
+  svg.style.filter = `hue-rotate(${((Number(bloom.seed ?? bloom.turn) || 0) % 25) - 12}deg) drop-shadow(0 10px 14px rgba(105, 82, 164, 0.14))`;
+  return { svg, entries };
+}
+
+function createFlowerPreview(bloom, className) {
+  return createFlowerCluster(bloom, className).svg;
 }
 
 const elements = {
@@ -98,8 +221,6 @@ const elements = {
   signalReadout: document.querySelector("#signal-readout"),
   liveFlower: document.querySelector("#live-flower"),
   ambientOrb: document.querySelector("#ambient-orb"),
-  leafLeft: document.querySelector("#leaf-left"),
-  leafRight: document.querySelector("#leaf-right"),
   resultTitle: document.querySelector("#result-title"),
   resultSummary: document.querySelector("#result-summary"),
   resultDuration: document.querySelector("#result-duration"),
@@ -131,6 +252,8 @@ const state = {
   activeSeconds: 0,
   strengthTotal: 0,
   activeSamples: 0,
+  sessionPlan: null,
+  liveFlowerEntries: [],
   blooms: loadBlooms(),
 };
 
@@ -316,13 +439,10 @@ function resetFlower() {
   state.smoothedStrength = 0;
   state.candidateSeconds = 0;
   state.inputActive = false;
-  elements.liveFlower.style.setProperty("--stem-progress", "0");
-  elements.liveFlower.style.setProperty("--bloom-progress", "0");
-  elements.liveFlower.style.setProperty("--sound", "0");
-  elements.leafLeft.style.setProperty("--part-opacity", "0");
-  elements.leafLeft.style.setProperty("--part-scale", "0.35");
-  elements.leafRight.style.setProperty("--part-opacity", "0");
-  elements.leafRight.style.setProperty("--part-scale", "0.35");
+  const plan = state.sessionPlan || createFlowerPlan(state.duration);
+  const cluster = createFlowerCluster({ ...plan, growth: 0 }, "live-flower__svg");
+  elements.liveFlower.replaceChildren(cluster.svg);
+  state.liveFlowerEntries = cluster.entries;
   elements.soundMeterFill.style.width = "0%";
   elements.signalReadout.textContent = "Mic signal 0%";
   elements.progressBar.style.width = "0%";
@@ -331,6 +451,7 @@ function resetFlower() {
 async function beginPractice() {
   if (state.phase !== "idle") return;
   state.phase = "requesting";
+  state.sessionPlan = createFlowerPlan(state.duration);
   resetFlower();
   showScreen("practice-screen");
 
@@ -430,16 +551,8 @@ function runSession(now) {
 }
 
 function updateFlower(growth, strength) {
-  const stages = getGrowthStages(growth);
-
-  elements.liveFlower.style.setProperty("--stem-progress", stages.stem.toFixed(3));
-  elements.liveFlower.style.setProperty("--bloom-progress", stages.bloom.toFixed(3));
-  elements.liveFlower.style.setProperty("--sound", strength.toFixed(3));
+  state.liveFlowerEntries.forEach((entry) => applyFlowerGrowth(entry, growth, strength));
   elements.ambientOrb.style.setProperty("--sound", strength.toFixed(3));
-  elements.leafLeft.style.setProperty("--part-opacity", stages.leftLeaf.toFixed(3));
-  elements.leafLeft.style.setProperty("--part-scale", (0.35 + stages.leftLeaf * 0.65).toFixed(3));
-  elements.leafRight.style.setProperty("--part-opacity", stages.rightLeaf.toFixed(3));
-  elements.leafRight.style.setProperty("--part-scale", (0.35 + stages.rightLeaf * 0.65).toFixed(3));
   elements.soundMeterFill.style.width = `${Math.round(strength * 100)}%`;
 }
 
@@ -484,6 +597,8 @@ function finishPractice() {
     strength: Math.round(averageStrength * 100),
     growth: Math.round(state.growth * 100),
     turn: Math.round(Math.random() * 280),
+    seed: state.sessionPlan?.seed,
+    flowers: state.sessionPlan?.flowers || createFlowerPlan(state.duration).flowers,
   };
 
   const hasMeaningfulInput = bloom.activeSeconds >= 1 && bloom.growth >= 2;
@@ -498,11 +613,12 @@ function finishPractice() {
 
 function showResult(bloom, hasMeaningfulInput) {
   const modeWord = bloom.mode === "breath" ? "breeze" : "hum";
+  const flowerCount = normalizeFlowerPlan(bloom).length;
   elements.resultTitle.textContent = hasMeaningfulInput
-    ? "Your practice became a flower."
+    ? `Your practice became ${flowerCount === 1 ? "a flower" : `${flowerCount} flowers`}.`
     : "Your seed is still waiting.";
   elements.resultSummary.textContent = hasMeaningfulInput
-    ? `Your ${modeWord} helped this bloom unfold. Every practice creates a different moment—never a score.`
+    ? `Your ${modeWord} helped ${flowerCount === 1 ? "this bloom" : "this little bouquet"} unfold. Every practice creates a different moment—never a score.`
     : "We did not detect enough matching sound, so no flower was added. Try again closer to the microphone in a quieter room.";
   elements.resultDuration.textContent = `${bloom.duration}s`;
   elements.resultActive.textContent = `${bloom.activeSeconds}s`;
@@ -554,11 +670,14 @@ function renderGarden() {
     visual.append(createFlowerPreview(visualBloom, "garden-flower-svg"));
 
     const title = document.createElement("strong");
-    title.textContent = bloom.mode === "breath" ? "Breeze Bloom" : "Resonance Bloom";
+    const flowerCount = normalizeFlowerPlan(bloom).length;
+    title.textContent = flowerCount === 1
+      ? (bloom.mode === "breath" ? "Breeze Bloom" : "Resonance Bloom")
+      : `${flowerCount}-Bloom Bouquet`;
 
     const growth = document.createElement("span");
     growth.className = "garden-card__growth";
-    growth.textContent = `Growth ${Math.round(Number(bloom.growth) || 0)}%`;
+    growth.textContent = `${flowerCount} ${flowerCount === 1 ? "bloom" : "blooms"} · Growth ${Math.round(Number(bloom.growth) || 0)}%`;
 
     const detail = document.createElement("small");
     const date = new Date(bloom.createdAt);

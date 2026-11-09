@@ -64,6 +64,13 @@ When you begin this step, start a fresh chat so its transcript stays clean. For 
 - Developer decision: Garden should show only each flower's final growth stage, not replay its animation.
 - Revision: practice now uses a symmetrical five-petal bloom. The same geometry is reused in the result and Garden, where saved growth reconstructs the final stem, leaves, bud, or open flower and displays a growth percentage.
 
+### November 9 — flower variety and longer sessions
+
+- Developer decision: add three visually different flower types, randomly select them for each practice, and make longer sessions grow several flowers at the same time.
+- Revision: Cloud Bloom, Moon Bell, and Star Petal now share the same staged stem/leaf/bloom growth system. Sessions map to one flower at 15 seconds, two different flowers at 30 seconds, and all three at 60 seconds. Small per-flower pace and delay differences keep a bouquet organic without changing the User's overall result.
+- Persistence rule: the selected types and their timing values are stored with the completed session, so the result and Garden reproduce the same final bouquet after refresh. Previous Garden records fall back to a single compatible flower.
+- Next phone test: complete one session at each duration and confirm the live quantity, result quantity, Garden quantity, random variety between new sessions, and stable appearance after refresh.
+
 ## Simplification reviews
 
 A project this size invites Agents to pile on code. Redirect them away from bloat, stacked patches, obsolete features, and edge cases that a simpler design or code-structure rule would prevent. At the end of Phases 3, 4, and 5, have the Agent identify these problems, then decide yourself what to change. Record what it found, what you decided and why, and the result. Update the architecture in `spec.md` if the structure changes.

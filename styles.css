@@ -479,69 +479,20 @@ h2 {
 
 .live-flower {
   position: relative;
+  display: grid;
   z-index: 1;
-  width: min(82vw, 330px);
+  width: min(94vw, 420px);
+  height: 100%;
   max-height: 100%;
+  place-items: center;
   overflow: visible;
 }
 
-.stem-path {
-  fill: none;
-  stroke: url(#stem-gradient);
-  stroke-width: 7;
-  stroke-linecap: round;
-  stroke-dasharray: 1;
-  stroke-dashoffset: calc(1 - var(--stem-progress, 0));
-}
-
-.leaf {
-  fill: url(#petal-gradient);
-  stroke: rgba(255, 255, 255, 0.86);
-  stroke-width: 2;
-  transform-box: fill-box;
-  transform-origin: center bottom;
-  opacity: var(--part-opacity, 0);
-  transform: scale(var(--part-scale, 0.35));
-}
-
-.leaf--left {
-  --delay: 0.25;
-}
-
-.leaf--right {
-  --delay: 0.42;
-}
-
-.bloom {
-  transform-box: fill-box;
-  transform-origin: center bottom;
-  transform: scale(calc(0.3 + var(--bloom-progress, 0) * 0.7 + var(--sound, 0) * 0.04));
-  opacity: calc(0.15 + var(--bloom-progress, 0) * 0.85);
-}
-
-.petal {
-  fill: url(#petal-gradient);
-  stroke: rgba(255, 255, 255, 0.9);
-  stroke-width: 2;
-}
-
-.petal--outer {
-  opacity: 0.78;
-}
-
-.petal--inner {
-  opacity: 0.9;
-}
-
-.flower-heart {
-  fill: #f6ecff;
-  stroke: white;
-  stroke-width: 2;
-}
-
-.ground-shadow {
-  fill: rgba(70, 55, 113, 0.09);
-  filter: blur(5px);
+.live-flower__svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 12px 18px rgba(105, 82, 164, 0.16));
 }
 
 .practice-guidance {
@@ -723,6 +674,7 @@ h2 {
   margin: -8px auto 3px;
 }
 
+.live-flower__svg,
 .garden-flower-svg,
 .result-flower__svg {
   width: 100%;
@@ -766,7 +718,7 @@ h2 {
   transform-box: fill-box;
   transform-origin: center bottom;
   opacity: calc(0.12 + var(--preview-bloom, 0) * 0.88);
-  transform: scale(calc(0.28 + var(--preview-bloom, 0) * 0.72));
+  transform: scale(calc(0.28 + var(--preview-bloom, 0) * 0.72 + var(--preview-sound, 0) * 0.04));
 }
 
 .garden-flower__petal {
@@ -787,6 +739,33 @@ h2 {
   fill: #f5efff;
   stroke: white;
   stroke-width: 2;
+}
+
+.garden-flower__moon-cup {
+  fill: #b8d8f7;
+  stroke: rgba(255, 255, 255, 0.94);
+  stroke-width: 3;
+}
+
+.garden-flower__moon-line {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.72);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.garden-flower__star-petal {
+  fill: #bba8ef;
+  stroke: rgba(255, 255, 255, 0.92);
+  stroke-width: 2;
+}
+
+.garden-flower__plant--moon .garden-flower__leaf {
+  fill: #c3dcf5;
+}
+
+.garden-flower__plant--star .garden-flower__leaf {
+  fill: #c6c0ef;
 }
 
 .garden-flower__ground {

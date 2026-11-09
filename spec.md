@@ -32,9 +32,11 @@ Breath Garden is currently a mobile-first browser prototype. A User chooses Brea
 - Once valid input is active, it supplies a comfortable baseline growth rate and relative strength adds acceleration. A continuous gentle 15-second input should reveal most of the flower; Users should not need to blow or hum forcefully.
 - Background sound or silence must not grow the flower. Input must rise above a calibration-derived trigger and persist briefly before growth begins. Mode-specific spectral characteristics adjust sensitivity but are not a hard rejection gate because mobile audio processing varies by device.
 - A session with less than one second of accepted input does not create or save a flower; the result explains that the seed is still waiting.
-- Finishing a session creates a local flower record containing mode, date, duration, active time, relative strength, growth, and a visual seed.
+- Finishing a session creates a local flower record containing mode, date, duration, active time, relative strength, growth, and a saved flower plan.
 - Saved flowers remain after refresh through `localStorage` and appear in My Garden.
-- Practice, result, and Garden use the same recognizable five-petal flower geometry. Each Garden card reconstructs the final saved stem, leaf, and bloom stage from that session's `growth` value and labels it with mode, date, duration, and growth percentage. Garden does not replay the animation.
+- Each new session randomly chooses from three recognizable flower types: Cloud Bloom, Moon Bell, and Star Petal. A 15-second session grows one flower, a 30-second session grows two different flowers, and a 60-second session grows all three. Flowers in a bouquet grow together with small timing differences.
+- The random flower plan is chosen once at the beginning and saved with the result. Practice, result, and Garden therefore show the same flower or bouquet, including after refresh. Older saved records without a flower plan remain displayable through a backwards-compatible fallback.
+- Each Garden card reconstructs only the final saved stem, leaf, and bloom stage from that session's `growth` value. It labels the entry with bloom count, date, duration, and growth percentage; Garden does not replay the animation.
 - If microphone access is denied, unsupported, or unavailable outside a secure context, the User sees a specific recovery message instead of a broken practice screen.
 - All controls have text labels or accessible names, visible keyboard focus, sufficient touch size, and reduced motion support.
 
@@ -68,7 +70,7 @@ getUserMedia -> Web Audio AnalyserNode -> level/frequency estimates
 
 ### Data and state
 
-`app.js` owns the current mode, duration, session phase, growth, smoothed strength, active time, and saved bloom list. The in-memory `state` object is the single source of truth during a session. The `breathGardenBloomsV1` localStorage entry is the source of truth between visits. Raw microphone samples are read into temporary typed arrays and are never saved.
+`app.js` owns the current mode, duration, session phase, growth, smoothed strength, active time, randomized flower plan, and saved bloom list. The in-memory `state` object is the single source of truth during a session. The `breathGardenBloomsV1` localStorage entry is the source of truth between visits. Raw microphone samples are read into temporary typed arrays and are never saved.
 
 ### Interaction loop
 

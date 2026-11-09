@@ -28,6 +28,15 @@ foreach ($reference in $localRefs) {
 
 if ($html -match '<script[^>]+https?://') { $failures.Add('External script reference found.') }
 if ($script -match 'MediaRecorder|audioBlob|arrayBuffer') { $failures.Add('Possible raw audio recording or storage code found.') }
+if ($script -notmatch 'FLOWER_TYPES\s*=\s*\["cloud",\s*"moon",\s*"star"\]') {
+  $failures.Add('The three approved flower types are not defined.')
+}
+if ($script -notmatch 'duration\s*>=\s*60\)\s*return\s*3' -or $script -notmatch 'duration\s*>=\s*30\)\s*return\s*2') {
+  $failures.Add('The approved 15/30/60 second flower-count mapping is missing.')
+}
+if ($script -notmatch 'flowers:\s*state\.sessionPlan') {
+  $failures.Add('Completed sessions do not appear to save their flower plan.')
+}
 
 if ($failures.Count -gt 0) {
   Write-Host 'Static checks failed:' -ForegroundColor Red
@@ -41,3 +50,5 @@ Write-Host "- $($selectorIds.Count) JavaScript id selectors resolved"
 Write-Host "- $($localRefs.Count) local resources resolved"
 Write-Host '- no external scripts'
 Write-Host '- no raw audio recording/storage markers'
+Write-Host '- three flower types and duration mapping present'
+Write-Host '- completed sessions save their flower plan'
