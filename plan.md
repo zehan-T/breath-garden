@@ -92,6 +92,8 @@ When you begin this step, start a fresh chat so its transcript stays clean. For 
 - Verified by the Developer: Breathe does not false-trigger during the current phone test.
 - Observation: Hum did not respond, and the live microphone signal remained at 0% while humming. Because Breathe works on the same phone, the likely cause is Hum sensitivity rather than microphone permission or startup.
 - Revision: preserve the verified Breathe thresholds while giving Hum a lower calibration-relative trigger, a narrower level-mapping range, and a lower sustained activation threshold suitable for gentle humming.
+- Follow-up observation: the Hum signal began to rise, but its movement and flower response remained too small.
+- Follow-up revision: apply a Hum-only nonlinear response curve that expands quiet changes into visible meter movement and growth while leaving zero input at zero and preserving the Breathe mapping.
 - Verification still needed: the Hum signal rises during comfortable humming, the flower grows and stops with the voice, different comfortable pitches respond, and ordinary speech does not cause sustained growth.
 
 ## Simplification reviews

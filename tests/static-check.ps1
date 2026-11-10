@@ -60,6 +60,9 @@ if ($script -notmatch 'modeCeiling\s*=\s*mode\s*===\s*"hum"\s*\?\s*0\.07\s*:\s*0
 if ($script -notmatch 'activationThreshold\s*=\s*state\.mode\s*===\s*"hum"\s*\?\s*0\.025\s*:\s*0\.04') {
   $failures.Add('Hum and Breathe activation thresholds are not mode-specific.')
 }
+if ($script -notmatch 'responseLevel\s*=\s*mode\s*===\s*"hum"\s*\?\s*Math\.pow\(relativeLevel,\s*0\.58\)\s*:\s*relativeLevel') {
+  $failures.Add('Hum does not have its approved nonlinear response curve.')
+}
 
 if ($failures.Count -gt 0) {
   Write-Host 'Static checks failed:' -ForegroundColor Red
@@ -78,4 +81,4 @@ Write-Host '- removed Star Petal records migrate to Peony Mist'
 Write-Host '- Orchid Veil and Peony Mist renderers present'
 Write-Host '- completed sessions save their flower plan'
 Write-Host '- multi-flower layouts share one ground baseline'
-Write-Host '- Hum uses a more sensitive mapping without changing Breathe thresholds'
+Write-Host '- Hum uses a nonlinear sensitive mapping without changing Breathe thresholds'

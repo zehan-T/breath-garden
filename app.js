@@ -446,6 +446,7 @@ class AudioProbe {
     const modeCeiling = mode === "hum" ? 0.07 : 0.17;
     const minimumRange = mode === "hum" ? 0.025 : 0.03;
     const relativeLevel = clamp((rms - modeTrigger) / Math.max(minimumRange, modeCeiling - modeTrigger));
+    const responseLevel = mode === "hum" ? Math.pow(relativeLevel, 0.58) : relativeLevel;
 
     // Air noise tends to be flatter and broader; humming tends to have stronger spectral peaks.
     // The User already selected the mode, so spectral character is only a light weighting,
@@ -463,8 +464,8 @@ class AudioProbe {
       flatness,
       highRatio,
       peakiness,
-      rawStrength: relativeLevel,
-      strength: clamp(relativeLevel * character),
+      rawStrength: responseLevel,
+      strength: clamp(responseLevel * character),
     };
   }
 
