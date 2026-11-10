@@ -80,6 +80,13 @@ When you begin this step, start a fresh chat so its transcript stays clean. For 
 - Bouquet alignment revision: calculate every plant's vertical position from one shared ground baseline, so differently scaled flowers have exactly aligned bottom shadows in practice, result, and Garden views.
 - Verification still needed: result and Garden reproduce the practice bouquet, and a saved bouquet remains unchanged after refresh.
 
+### November 9 — replace Star Petal
+
+- Developer decision: remove the sunflower-like Star Petal completely and replace it with two new flower designs that retain the shared bottom alignment.
+- Revision: the active set is now Cloud Bloom, Moon Bell, Orchid Veil, and Peony Mist. Orchid Veil uses airy asymmetrical blue-lavender petals; Peony Mist uses layered rounded petals without a circular center.
+- Compatibility rule: previously saved Star Petal entries render as Peony Mist so the visual is removed without deleting the User's saved practice record.
+- Duration behavior remains one flower at 15 seconds, two different flowers at 30 seconds, and three different flowers selected from the four-type set at 60 seconds.
+
 ## Simplification reviews
 
 A project this size invites Agents to pile on code. Redirect them away from bloat, stacked patches, obsolete features, and edge cases that a simpler design or code-structure rule would prevent. At the end of Phases 3, 4, and 5, have the Agent identify these problems, then decide yourself what to change. Record what it found, what you decided and why, and the result. Update the architecture in `spec.md` if the structure changes.

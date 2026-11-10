@@ -754,9 +754,45 @@ h2 {
   stroke-linecap: round;
 }
 
-.garden-flower__star-petal {
-  fill: #bba8ef;
+.garden-flower__orchid-petal {
+  fill: #b9d8f7;
   stroke: rgba(255, 255, 255, 0.92);
+  stroke-width: 2;
+}
+
+.garden-flower__orchid-petal--back {
+  fill: #c9bcf2;
+}
+
+.garden-flower__orchid-lip {
+  fill: #eee8ff;
+  stroke: rgba(255, 255, 255, 0.96);
+  stroke-width: 2;
+}
+
+.garden-flower__orchid-line {
+  fill: none;
+  stroke: #b39ee4;
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.garden-flower__peony-petal {
+  stroke: rgba(255, 255, 255, 0.9);
+  stroke-width: 2;
+}
+
+.garden-flower__peony-petal--outer {
+  fill: #c9baf2;
+}
+
+.garden-flower__peony-petal--inner {
+  fill: #b8d8f5;
+}
+
+.garden-flower__peony-fold {
+  fill: #e7ddfa;
+  stroke: rgba(255, 255, 255, 0.95);
   stroke-width: 2;
 }
 
@@ -764,8 +800,12 @@ h2 {
   fill: #c3dcf5;
 }
 
-.garden-flower__plant--star .garden-flower__leaf {
+.garden-flower__plant--orchid .garden-flower__leaf {
   fill: #c6c0ef;
+}
+
+.garden-flower__plant--peony .garden-flower__leaf {
+  fill: #b7d8ee;
 }
 
 .garden-flower__ground {

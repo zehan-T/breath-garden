@@ -21,7 +21,7 @@ function getGrowthStages(growth) {
   };
 }
 
-const FLOWER_TYPES = ["cloud", "moon", "star"];
+const FLOWER_TYPES = ["cloud", "moon", "orchid", "peony"];
 
 function seededRandom(seed) {
   let value = seed >>> 0;
@@ -60,7 +60,16 @@ function createFlowerPlan(duration) {
 }
 
 function normalizeFlowerPlan(bloom) {
-  if (Array.isArray(bloom.flowers) && bloom.flowers.length) return bloom.flowers.slice(0, 3);
+  if (Array.isArray(bloom.flowers) && bloom.flowers.length) {
+    return bloom.flowers.slice(0, 3).map((spec, index) => {
+      const migratedType = spec?.type === "star" ? "peony" : spec?.type;
+      return {
+        type: FLOWER_TYPES.includes(migratedType) ? migratedType : FLOWER_TYPES[index % FLOWER_TYPES.length],
+        pace: Number(spec?.pace) || 1,
+        delay: Number(spec?.delay) || 0,
+      };
+    });
+  }
   const fallbackIndex = Math.abs(Number(bloom.turn) || 0) % FLOWER_TYPES.length;
   return [{ type: FLOWER_TYPES[fallbackIndex], pace: 1, delay: 0 }];
 }
@@ -101,23 +110,86 @@ function appendBloomShape(group, type) {
     return;
   }
 
-  if (type === "star") {
-    for (let angle = 0; angle < 360; angle += 45) {
-      group.append(createSvgNode("ellipse", {
-        class: "garden-flower__star-petal",
-        cx: 168,
+  if (type === "orchid") {
+    group.append(
+      createSvgNode("ellipse", {
+        class: "garden-flower__orchid-petal garden-flower__orchid-petal--back",
+        cx: 146,
         cy: 70,
-        rx: 13,
-        ry: 43,
-        transform: `rotate(${angle} 168 108)`,
-      }));
-    }
-    group.append(createSvgNode("circle", {
-      class: "garden-flower__heart",
-      cx: 168,
-      cy: 98,
-      r: 17,
-    }));
+        rx: 25,
+        ry: 49,
+        transform: "rotate(-27 146 70)",
+      }),
+      createSvgNode("ellipse", {
+        class: "garden-flower__orchid-petal garden-flower__orchid-petal--back",
+        cx: 190,
+        cy: 70,
+        rx: 25,
+        ry: 49,
+        transform: "rotate(27 190 70)",
+      }),
+      createSvgNode("ellipse", {
+        class: "garden-flower__orchid-petal",
+        cx: 125,
+        cy: 98,
+        rx: 24,
+        ry: 46,
+        transform: "rotate(-69 125 98)",
+      }),
+      createSvgNode("ellipse", {
+        class: "garden-flower__orchid-petal",
+        cx: 211,
+        cy: 98,
+        rx: 24,
+        ry: 46,
+        transform: "rotate(69 211 98)",
+      }),
+      createSvgNode("path", {
+        class: "garden-flower__orchid-lip",
+        d: "M143 97 C151 88 160 88 168 97 C176 88 185 88 193 97 C190 119 181 134 168 140 C155 134 146 119 143 97Z",
+      }),
+      createSvgNode("path", {
+        class: "garden-flower__orchid-line",
+        d: "M153 103 C161 107 165 116 168 132 C171 116 175 107 183 103",
+      }),
+    );
+    return;
+  }
+
+  if (type === "peony") {
+    const outerPetals = [
+      { cx: 119, cy: 96, rx: 29, ry: 40, transform: "rotate(-58 119 96)" },
+      { cx: 140, cy: 70, rx: 30, ry: 45, transform: "rotate(-27 140 70)" },
+      { cx: 168, cy: 61, rx: 31, ry: 47 },
+      { cx: 196, cy: 70, rx: 30, ry: 45, transform: "rotate(27 196 70)" },
+      { cx: 217, cy: 96, rx: 29, ry: 40, transform: "rotate(58 217 96)" },
+    ];
+    outerPetals.forEach((attributes) => group.append(createSvgNode("ellipse", {
+      ...attributes,
+      class: "garden-flower__peony-petal garden-flower__peony-petal--outer",
+    })));
+    group.append(
+      createSvgNode("ellipse", {
+        class: "garden-flower__peony-petal garden-flower__peony-petal--inner",
+        cx: 145,
+        cy: 96,
+        rx: 27,
+        ry: 35,
+        transform: "rotate(-32 145 96)",
+      }),
+      createSvgNode("ellipse", {
+        class: "garden-flower__peony-petal garden-flower__peony-petal--inner",
+        cx: 191,
+        cy: 96,
+        rx: 27,
+        ry: 35,
+        transform: "rotate(32 191 96)",
+      }),
+      createSvgNode("path", {
+        class: "garden-flower__peony-fold",
+        d: "M147 104 C151 86 160 79 168 91 C176 79 185 86 189 104 C183 122 176 132 168 138 C160 132 153 122 147 104Z",
+      }),
+    );
     return;
   }
 
