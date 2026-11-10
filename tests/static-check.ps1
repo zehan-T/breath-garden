@@ -60,8 +60,11 @@ if ($script -notmatch 'modeCeiling\s*=\s*mode\s*===\s*"hum"\s*\?\s*0\.07\s*:\s*0
 if ($script -notmatch 'activationThreshold\s*=\s*state\.mode\s*===\s*"hum"\s*\?\s*0\.025\s*:\s*0\.04') {
   $failures.Add('Hum and Breathe activation thresholds are not mode-specific.')
 }
-if ($script -notmatch 'responseLevel\s*=\s*mode\s*===\s*"hum"\s*\?\s*Math\.pow\(relativeLevel,\s*0\.58\)\s*:\s*relativeLevel') {
+if ($script -notmatch 'amplitudeResponse\s*=\s*mode\s*===\s*"hum"\s*\?\s*Math\.pow\(relativeLevel,\s*0\.58\)\s*:\s*relativeLevel') {
   $failures.Add('Hum does not have its approved nonlinear response curve.')
+}
+if ($script -notmatch 'tonalLevel\s*=\s*clamp\(\(peak\s*-\s*0\.02\)\s*/\s*0\.28\)' -or $script -notmatch 'Math\.max\(amplitudeResponse,\s*tonalResponse\)') {
+  $failures.Add('Hum does not combine volume and tonal-frequency response.')
 }
 
 if ($failures.Count -gt 0) {
@@ -82,3 +85,4 @@ Write-Host '- Orchid Veil and Peony Mist renderers present'
 Write-Host '- completed sessions save their flower plan'
 Write-Host '- multi-flower layouts share one ground baseline'
 Write-Host '- Hum uses a nonlinear sensitive mapping without changing Breathe thresholds'
+Write-Host '- Hum can respond to a tonal peak when phone voice level is suppressed'

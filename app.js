@@ -446,7 +446,7 @@ class AudioProbe {
     const modeCeiling = mode === "hum" ? 0.07 : 0.17;
     const minimumRange = mode === "hum" ? 0.025 : 0.03;
     const relativeLevel = clamp((rms - modeTrigger) / Math.max(minimumRange, modeCeiling - modeTrigger));
-    const responseLevel = mode === "hum" ? Math.pow(relativeLevel, 0.58) : relativeLevel;
+    const amplitudeResponse = mode === "hum" ? Math.pow(relativeLevel, 0.58) : relativeLevel;
 
     // Air noise tends to be flatter and broader; humming tends to have stronger spectral peaks.
     // The User already selected the mode, so spectral character is only a light weighting,
@@ -455,6 +455,14 @@ class AudioProbe {
       + clamp((highRatio - 0.2) / 0.45) * 0.38;
     const humConfidence = clamp((peakiness - 0.08) / 0.42) * 0.58
       + clamp((0.82 - flatness) / 0.58) * 0.42;
+    // Some phones heavily suppress a soft sustained voice in the time-domain
+    // level while its frequency peak remains clear. Let that tonal peak rescue
+    // Hum response instead of requiring the User to sing against the phone.
+    const tonalLevel = clamp((peak - 0.02) / 0.28);
+    const tonalResponse = Math.pow(tonalLevel, 0.72) * (0.35 + humConfidence * 0.65);
+    const responseLevel = mode === "hum"
+      ? Math.max(amplitudeResponse, tonalResponse)
+      : amplitudeResponse;
     const character = mode === "breath"
       ? 0.72 + breathConfidence * 0.28
       : 0.68 + humConfidence * 0.32;

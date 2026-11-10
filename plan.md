@@ -94,6 +94,8 @@ When you begin this step, start a fresh chat so its transcript stays clean. For 
 - Revision: preserve the verified Breathe thresholds while giving Hum a lower calibration-relative trigger, a narrower level-mapping range, and a lower sustained activation threshold suitable for gentle humming.
 - Follow-up observation: the Hum signal began to rise, but its movement and flower response remained too small.
 - Follow-up revision: apply a Hum-only nonlinear response curve that expands quiet changes into visible meter movement and growth while leaving zero input at zero and preserving the Breathe mapping.
+- Second follow-up observation: Hum still changed only slightly and only with the phone extremely close, showing that the phone suppresses the overall voice level too strongly for an RMS-led interaction.
+- Second follow-up revision: combine the nonlinear volume response with the strongest tonal frequency peak. A clear sustained hum can now drive the meter and flower even when the phone reports very low overall volume; Breathe remains unchanged.
 - Verification still needed: the Hum signal rises during comfortable humming, the flower grows and stops with the voice, different comfortable pitches respond, and ordinary speech does not cause sustained growth.
 
 ## Simplification reviews
