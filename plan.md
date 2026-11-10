@@ -87,6 +87,13 @@ When you begin this step, start a fresh chat so its transcript stays clean. For 
 - Compatibility rule: previously saved Star Petal entries render as Peony Mist so the visual is removed without deleting the User's saved practice record.
 - Duration behavior remains one flower at 15 seconds, two different flowers at 30 seconds, and three different flowers selected from the four-type set at 60 seconds.
 
+### November 9 — Hum phone test
+
+- Verified by the Developer: Breathe does not false-trigger during the current phone test.
+- Observation: Hum did not respond, and the live microphone signal remained at 0% while humming. Because Breathe works on the same phone, the likely cause is Hum sensitivity rather than microphone permission or startup.
+- Revision: preserve the verified Breathe thresholds while giving Hum a lower calibration-relative trigger, a narrower level-mapping range, and a lower sustained activation threshold suitable for gentle humming.
+- Verification still needed: the Hum signal rises during comfortable humming, the flower grows and stops with the voice, different comfortable pitches respond, and ordinary speech does not cause sustained growth.
+
 ## Simplification reviews
 
 A project this size invites Agents to pile on code. Redirect them away from bloat, stacked patches, obsolete features, and edge cases that a simpler design or code-structure rule would prevent. At the end of Phases 3, 4, and 5, have the Agent identify these problems, then decide yourself what to change. Record what it found, what you decided and why, and the result. Update the architecture in `spec.md` if the structure changes.

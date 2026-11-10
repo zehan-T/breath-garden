@@ -437,7 +437,15 @@ class AudioProbe {
     const flatness = clamp(Math.exp(logTotal / Math.max(1, count)) / Math.max(0.0001, mean));
     const highRatio = highEnergy / Math.max(0.0001, lowEnergy + highEnergy);
     const peakiness = clamp((peak - mean) / Math.max(0.05, 1 - mean));
-    const relativeLevel = clamp((rms - this.triggerLevel) / Math.max(0.03, 0.17 - this.triggerLevel));
+    // Soft humming is usually much quieter at a phone microphone than directed
+    // breath noise. Give Hum its own calibrated floor and a narrower useful
+    // range while leaving the already verified Breathe response unchanged.
+    const modeTrigger = mode === "hum"
+      ? Math.max(this.noiseFloor + 0.001, this.triggerLevel * 0.58)
+      : this.triggerLevel;
+    const modeCeiling = mode === "hum" ? 0.07 : 0.17;
+    const minimumRange = mode === "hum" ? 0.025 : 0.03;
+    const relativeLevel = clamp((rms - modeTrigger) / Math.max(minimumRange, modeCeiling - modeTrigger));
 
     // Air noise tends to be flatter and broader; humming tends to have stronger spectral peaks.
     // The User already selected the mode, so spectral character is only a light weighting,
@@ -596,7 +604,8 @@ function runSession(now) {
   state.lastFrame = now;
 
   const metrics = audioProbe.analyze(state.mode);
-  if (metrics.strength > 0.04) {
+  const activationThreshold = state.mode === "hum" ? 0.025 : 0.04;
+  if (metrics.strength > activationThreshold) {
     state.candidateSeconds = Math.min(0.5, state.candidateSeconds + deltaSeconds);
   } else {
     state.candidateSeconds = Math.max(0, state.candidateSeconds - deltaSeconds * 2.5);
@@ -606,7 +615,7 @@ function runSession(now) {
   const targetStrength = state.inputActive ? metrics.strength : 0;
   state.smoothedStrength = state.smoothedStrength * 0.72 + targetStrength * 0.28;
 
-  if (state.inputActive && state.smoothedStrength > 0.04) {
+  if (state.inputActive && state.smoothedStrength > activationThreshold) {
     state.activeSeconds += deltaSeconds;
     state.strengthTotal += state.smoothedStrength;
     state.activeSamples += 1;

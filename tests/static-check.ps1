@@ -54,6 +54,12 @@ if ($script -notmatch 'flowers:\s*state\.sessionPlan') {
 if ($script -notmatch 'y:\s*365\s*\*\s*\(1\s*-\s*scale\)') {
   $failures.Add('Multi-flower layouts do not share the approved ground baseline.')
 }
+if ($script -notmatch 'modeCeiling\s*=\s*mode\s*===\s*"hum"\s*\?\s*0\.07\s*:\s*0\.17') {
+  $failures.Add('Hum does not have its approved lower-level microphone mapping.')
+}
+if ($script -notmatch 'activationThreshold\s*=\s*state\.mode\s*===\s*"hum"\s*\?\s*0\.025\s*:\s*0\.04') {
+  $failures.Add('Hum and Breathe activation thresholds are not mode-specific.')
+}
 
 if ($failures.Count -gt 0) {
   Write-Host 'Static checks failed:' -ForegroundColor Red
@@ -72,3 +78,4 @@ Write-Host '- removed Star Petal records migrate to Peony Mist'
 Write-Host '- Orchid Veil and Peony Mist renderers present'
 Write-Host '- completed sessions save their flower plan'
 Write-Host '- multi-flower layouts share one ground baseline'
+Write-Host '- Hum uses a more sensitive mapping without changing Breathe thresholds'
